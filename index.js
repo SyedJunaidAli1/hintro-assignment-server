@@ -14,10 +14,7 @@ const io = new Server(server, {
 
 import registerSockets from "./sockets/index.js";
 registerSockets(io);
-console.log(process.env)
 
 const PORT = process.env.PORT;
-
-
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
