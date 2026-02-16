@@ -11,7 +11,7 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.NEXT_PUBLIC_CLIENT,
     credentials: true,
   }),
 );
@@ -26,9 +26,9 @@ import listRoutes from "./routes/list.routes.js";
 import taskRoutes from "./routes/task.routes.js";
 
 app.use("/api/boards", boardRoutes);
-app.use(errorHandler);
 app.use("/api/auth", authRoutes);
 app.use("/api/lists", listRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use(errorHandler);
 
 export default app;

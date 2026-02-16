@@ -2,30 +2,39 @@ import jwt from "jsonwebtoken";
 
 export default function registerSockets(io) {
   io.use((socket, next) => {
-    const cookie = socket.handshake.headers.cookie;
+    const token = socket.handshake.auth?.token;
 
-    if (!cookie) return next(new Error("Unauthorized"));
-
-    const token = cookie.split("token=")[1];
+    if (!token) {
+      return next(new Error("Unauthorized"));
+    }
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
       socket.userId = decoded.userId;
+
       next();
     } catch {
       next(new Error("Unauthorized"));
     }
   });
-
   io.on("connection", (socket) => {
-    console.log("User connected:", socket.userId);
+    console.log("User connected:", socket.id);
 
+    // join board room
     socket.on("joinBoard", (boardId) => {
+      if (!boardId) return;
+
       socket.join(boardId);
+      console.log(`Socket ${socket.id} joined board ${boardId}`);
     });
 
-    socket.on("taskMoved", ({ boardId, task }) => {
-      socket.to(boardId).emit("taskMoved", task);
+    socket.emit("connected", {
+      message: "Socket connected successfully",
+    });
+
+    socket.on("disconnect", () => {
+      console.log("User disconnected");
     });
   });
 }
