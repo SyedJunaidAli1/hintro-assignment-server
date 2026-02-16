@@ -20,7 +20,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 import authRoutes from "./routes/auth.routes.js";
+import errorHandler from "./middleware/error.js";
+import boardRoutes from "./routes/board.routes.js";
 
+app.use("/api/boards", boardRoutes);
+app.use(errorHandler);
 app.use("/api/auth", authRoutes);
 
 export default app;
