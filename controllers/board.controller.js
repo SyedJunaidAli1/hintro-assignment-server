@@ -25,3 +25,15 @@ export const getBoards = async (req, res, next) => {
     next(err);
   }
 };
+
+export const deleteList = async (req, res, next) => {
+  try {
+    await List.findByIdAndDelete(req.params.id);
+
+    res.json({
+      message: "List deleted",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
