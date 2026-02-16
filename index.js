@@ -14,7 +14,9 @@ const io = new Server(server, {
     origin: process.env.NEXT_PUBLIC_CLIENT,
     credentials: true,
   },
+  transports: ["websocket"],
 });
+
 app.set("io", io);
 
 registerSockets(io);
