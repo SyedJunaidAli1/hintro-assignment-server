@@ -56,3 +56,70 @@ export const getTasks = async (req, res, next) => {
     next(err);
   }
 };
+
+export const moveTask = async (req, res, next) => {
+  try {
+    const { taskId, toListId, toPosition } = req.body;
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    const fromListId = task.listId;
+    const fromPosition = task.position;
+
+    // ✅ CASE 1 — same list
+    if (fromListId.toString() === toListId) {
+
+      await Task.updateMany(
+        {
+          listId: fromListId,
+          position: { $gt: fromPosition, $lte: toPosition },
+        },
+        { $inc: { position: -1 } }
+      );
+
+      await Task.updateMany(
+        {
+          listId: fromListId,
+          position: { $gte: toPosition, $lt: fromPosition },
+        },
+        { $inc: { position: 1 } }
+      );
+
+    } else {
+
+      // ✅ close gap in old list
+      await Task.updateMany(
+        {
+          listId: fromListId,
+          position: { $gt: fromPosition },
+        },
+        { $inc: { position: -1 } }
+      );
+
+      // ✅ make space in new list
+      await Task.updateMany(
+        {
+          listId: toListId,
+          position: { $gte: toPosition },
+        },
+        { $inc: { position: 1 } }
+      );
+    }
+
+    task.listId = toListId;
+    task.position = toPosition;
+
+    await task.save();
+
+    res.json(task);
+
+  } catch (err) {
+    next(err);
+  }
+};
