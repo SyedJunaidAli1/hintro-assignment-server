@@ -23,10 +23,12 @@ import authRoutes from "./routes/auth.routes.js";
 import errorHandler from "./middleware/error.js";
 import boardRoutes from "./routes/board.routes.js";
 import listRoutes from "./routes/list.routes.js";
+import taskRoutes from "./routes/task.routes.js";
 
 app.use("/api/boards", boardRoutes);
 app.use(errorHandler);
 app.use("/api/auth", authRoutes);
 app.use("/api/lists", listRoutes);
+app.use("/api/tasks", taskRoutes);
 
 export default app;
